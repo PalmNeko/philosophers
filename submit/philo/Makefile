@@ -1,6 +1,5 @@
 
 NAME        = philo
-FILE_PREFIX = ph
 SRC         = \
 	main.c \
 	./ph_create_philo_threads.c \
