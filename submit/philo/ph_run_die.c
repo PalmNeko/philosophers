@@ -1,20 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ph_run_sleep.c                                     :+:      :+:    :+:   */
+/*   ph_run_die.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tookuyam <tookuyam@student.42tokyo.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/15 11:02:08 by tookuyam          #+#    #+#             */
-/*   Updated: 2025/03/08 15:54:44 by tookuyam         ###   ########.fr       */
+/*   Created: 2025/03/08 15:25:30 by tookuyam          #+#    #+#             */
+/*   Updated: 2025/03/08 15:55:03 by tookuyam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ph.h"
 
-void	ph_run_sleep(t_philosopher *philo)
+void	ph_run_die(t_philosopher *philo)
 {
 	ph_to_status(philo, PH_DOING);
-	ph_print_action(philo, PH_SLEEP);
+	ph_print_action(philo, PH_DIE);
 	ph_msleep_philo((unsigned int)philo->manager->config->time_to_sleep, philo);
 }

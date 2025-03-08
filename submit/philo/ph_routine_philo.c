@@ -12,31 +12,48 @@
 
 #include "ph.h"
 
+bool	ph_isdone(t_philosopher *philo);
+void	ph_done(t_philosopher *philo);
+
 void	*ph_routine_philo(t_philosopher *philo)
 {
 	int		cnt;
-	bool	in_process;
+	// bool	in_process;
 
 	cnt = 0;
 	while (philo->manager->config->must_eat_times == -1
-		|| cnt < philo->manager->config->must_eat_times)
+		|| philo->eat_cnt < philo->manager->config->must_eat_times)
 	{
-		ph_run_think(philo);
-		ph_run_eat(philo);
-		if (philo->manager->config->must_eat_times != -1
-			&& philo->eat_cnt >= philo->manager->config->must_eat_times)
-			break ;
-		ph_run_sleep(philo);
-		pthread_mutex_lock(&philo->lock);
-		in_process = philo->in_process;
-		pthread_mutex_unlock(&philo->lock);
-		if (in_process == false)
+		ph_wait_some_order(philo);
+		if (philo->ordered_action == PH_DIE)
+			return (ph_run_die(philo), NULL);
+		if (philo->ordered_action == PH_EAT)
+			ph_run_eat(philo);
+		else if (philo->ordered_action == PH_SLEEP)
+			ph_run_sleep(philo);
+		else if (philo->ordered_action == PH_THINK)
+			ph_run_think(philo);
+		if (ph_isdone(philo))
 			return (NULL);
-		cnt++;
 	}
 	ph_print_action(philo, PH_SLEEP);
-	pthread_mutex_lock(&philo->lock);
-	philo->in_process = false;
-	pthread_mutex_unlock(&philo->lock);
+	ph_done(philo);
 	return (NULL);
+}
+
+void	ph_done(t_philosopher *philo)
+{
+	pthread_mutex_lock(&philo->lock);
+	philo->status = PH_DONE;
+	pthread_mutex_unlock(&philo->lock);
+}
+
+bool	ph_isdone(t_philosopher *philo)
+{
+	bool	done;
+
+	pthread_mutex_lock(&philo->lock);
+	done = philo->in_process == false;
+	pthread_mutex_unlock(&philo->lock);
+	return (done);
 }

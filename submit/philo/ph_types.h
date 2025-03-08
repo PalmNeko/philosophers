@@ -21,8 +21,27 @@ typedef struct s_action_queue		t_action_queue;
 typedef struct s_philosopher		t_philosopher;
 typedef struct s_ph_manager			t_manager;
 typedef enum e_philo_action			t_philo_action;
+typedef enum e_philo_status			t_philo_status;
 typedef struct s_log_info			t_log_info;
 typedef struct s_ph_config			t_ph_config;
+
+enum e_philo_status
+{
+	PH_NONE,
+	PH_DOING,
+	PH_DONE,
+	PH_HAS_ORDER,
+};
+
+enum e_philo_action
+{
+	PH_ACT_NONE,
+	PH_EAT,
+	PH_PICK_UP,
+	PH_SLEEP,
+	PH_THINK,
+	PH_DIE,
+};
 
 struct s_ph_config
 {
@@ -54,17 +73,10 @@ struct s_philosopher
 	bool			is_eating;
 	bool			eating_order;
 	bool			in_process;
+	t_philo_status	status;
+	t_philo_action	ordered_action;
 	pthread_mutex_t	lock;
 	t_manager		*manager;
-};
-
-enum e_philo_action
-{
-	PH_EAT,
-	PH_PICK_UP,
-	PH_SLEEP,
-	PH_THINK,
-	PH_DIE,
 };
 
 struct s_log_info

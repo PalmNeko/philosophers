@@ -8,6 +8,7 @@ SRC         = \
 	./ph_main.c \
 	./ph_msectotimeval.c \
 	./ph_msleep_philo.c \
+	./ph_order.c \
 	./ph_print_action.c \
 	./ph_print_error.c \
 	./ph_print_log.c \
@@ -15,11 +16,11 @@ SRC         = \
 	./ph_routine_observer.c \
 	./ph_routine_philo.c \
 	./ph_routine_update_manager.c \
+	./ph_run_die.c \
 	./ph_run_eat.c \
 	./ph_run_sleep.c \
 	./ph_run_think.c \
-	./ph_set_end.c \
-	./ph_wait_until_eatable.c
+	./ph_set_end.c
 
 OBJS        = $(SRC:.c=.o)
 DEPS        = $(SRC:.c=.d)

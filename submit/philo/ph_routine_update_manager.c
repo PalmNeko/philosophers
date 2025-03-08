@@ -10,19 +10,17 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ph_types.h"
+#include "ph.h"
 #include <sys/time.h>
 #include <unistd.h>
 
-void	ph_update_philo_eating(t_manager *manager, bool *eat_switch);
+void	ph_update_philo_eating(t_manager *manager);
 void	ph_exit_all_philo(t_manager *manager);
 
 void	*ph_routine_update_manager(t_manager *manager)
 {
 	bool	in_progress;
-	bool	eat_switch;
 
-	eat_switch = false;
 	manager->target_no = 0;
 	while (1)
 	{
@@ -31,7 +29,7 @@ void	*ph_routine_update_manager(t_manager *manager)
 		pthread_mutex_unlock(&manager->lock);
 		if (in_progress == false)
 			break ;
-		ph_update_philo_eating(manager, &eat_switch);
+		ph_update_philo_eating(manager);
 		if (usleep(0) == -1)
 		{
 			pthread_mutex_lock(&manager->lock);
@@ -44,24 +42,30 @@ void	*ph_routine_update_manager(t_manager *manager)
 	return (NULL);
 }
 
-void	ph_update_philo_eating(t_manager *manager, bool *eat_switch)
+void	ph_update_philo_eating(t_manager *manager)
 {
 	t_philosopher	*target;
+	t_philosopher	*next_philo;
 
 	target = &manager->philos[manager->target_no];
+	next_philo = &manager->philos[(manager->target_no + 1) % 2];
 	pthread_mutex_lock(&target->lock);
-	if (*eat_switch == false && target->eating_order == false)
+	if (target->status == PH_HAS_ORDER)
+		;
+	else if (target->ordered_action == PH_NONE)
+		ph_order(target, PH_THINK, false);
+	else if (target->ordered_action == PH_THINK
+		&& next_philo->ordered_action != PH_EAT)
+		ph_order(target, PH_EAT, false);
+	else if (target->ordered_action == PH_EAT)
 	{
-		target->eating_order = true;
-		*eat_switch = true;
-	}
-	else if (*eat_switch == true && target->eating_order == false)
-	{
-		*eat_switch = false;
 		manager->target_no += 2;
 		if (manager->target_no >= manager->config->philo_cnt)
 			manager->target_no = (manager->target_no + 1) % 2;
+		ph_order(target, PH_SLEEP, false);
 	}
+	else if (target->ordered_action == PH_SLEEP)
+		ph_order(target, PH_THINK, false);
 	pthread_mutex_unlock(&target->lock);
 }
 
