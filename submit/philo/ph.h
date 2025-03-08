@@ -41,5 +41,7 @@ int				ph_order(
 int				ph_wait_some_order(t_philosopher *philo);
 void			ph_run_die(t_philosopher *philo);
 int				ph_to_status(t_philosopher *philo, t_philo_status status);
+bool			ph_can_eat(t_philosopher *philo);
+t_philosopher	*ph_get_next_philo(t_philosopher *philo);
 
 #endif

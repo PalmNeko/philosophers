@@ -14,8 +14,10 @@
 #include <sys/time.h>
 #include <unistd.h>
 
-void	ph_update_philo_eating(t_manager *manager);
+void	ph_order_to_philos(t_manager *manager);
+void	ph_order_action(t_philosopher *philo);
 void	ph_exit_all_philo(t_manager *manager);
+void	ph_to_next_target(t_manager *manager);
 
 void	*ph_routine_update_manager(t_manager *manager)
 {
@@ -29,7 +31,7 @@ void	*ph_routine_update_manager(t_manager *manager)
 		pthread_mutex_unlock(&manager->lock);
 		if (in_progress == false)
 			break ;
-		ph_update_philo_eating(manager);
+		ph_order_to_philos(manager);
 		if (usleep(0) == -1)
 		{
 			pthread_mutex_lock(&manager->lock);
@@ -42,31 +44,46 @@ void	*ph_routine_update_manager(t_manager *manager)
 	return (NULL);
 }
 
-void	ph_update_philo_eating(t_manager *manager)
+void	ph_order_to_philos(t_manager *manager)
 {
-	t_philosopher	*target;
-	t_philosopher	*next_philo;
+	int	index;
 
-	target = &manager->philos[manager->target_no];
-	next_philo = &manager->philos[(manager->target_no + 1) % 2];
-	pthread_mutex_lock(&target->lock);
-	if (target->status == PH_HAS_ORDER)
-		;
-	else if (target->ordered_action == PH_NONE)
-		ph_order(target, PH_THINK, false);
-	else if (target->ordered_action == PH_THINK
-		&& next_philo->ordered_action != PH_EAT)
-		ph_order(target, PH_EAT, false);
-	else if (target->ordered_action == PH_EAT)
+	index = 0;
+	while (index < manager->config->philo_cnt)
 	{
-		manager->target_no += 2;
-		if (manager->target_no >= manager->config->philo_cnt)
-			manager->target_no = (manager->target_no + 1) % 2;
-		ph_order(target, PH_SLEEP, false);
+		ph_order_action(&manager->philos[index]);
+		index++;
 	}
-	else if (target->ordered_action == PH_SLEEP)
-		ph_order(target, PH_THINK, false);
-	pthread_mutex_unlock(&target->lock);
+	return ;
+}
+
+void	ph_order_action(t_philosopher *philo)
+{
+	t_manager	*manager;
+
+	manager = philo->manager;
+	pthread_mutex_lock(&philo->lock);
+	if (philo->status == PH_HAS_ORDER)
+		;
+	else if (philo->ordered_action == PH_NONE)
+		ph_order(philo, PH_THINK, false);
+	else if (ph_can_eat(philo))
+		ph_order(philo, PH_EAT, false);
+	else if (philo->ordered_action == PH_EAT)
+	{
+		ph_to_next_target(manager);
+		ph_order(philo, PH_SLEEP, false);
+	}
+	else if (philo->ordered_action == PH_SLEEP)
+		ph_order(philo, PH_THINK, false);
+	pthread_mutex_unlock(&philo->lock);
+}
+
+void	ph_to_next_target(t_manager *manager)
+{
+	manager->target_no += 2;
+	if (manager->target_no >= manager->config->philo_cnt)
+		manager->target_no = (manager->target_no + 1) % 2;
 }
 
 void	ph_exit_all_philo(t_manager *manager)

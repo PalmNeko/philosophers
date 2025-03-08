@@ -2,9 +2,11 @@
 NAME        = philo
 SRC         = \
 	main.c \
+	./ph_can_eat.c \
 	./ph_create_philo_threads.c \
 	./ph_destroy_philosophers.c \
 	./ph_generate_philosophers.c \
+	./ph_get_next_philo.c \
 	./ph_main.c \
 	./ph_msectotimeval.c \
 	./ph_msleep_philo.c \
