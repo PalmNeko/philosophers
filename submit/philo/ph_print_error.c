@@ -11,17 +11,10 @@
 /* ************************************************************************** */
 
 #include <unistd.h>
+#include "ph.h"
 
 void	ph_print_error(const char *str)
 {
-	int		size;
-	ssize_t	len;
-
-	size = 0;
-	while (str[size] != '\0')
-		size++;
-	len = write(2, str, size);
-	if (len == -1)
-		return ;
+	ph_putstr(2, str);
 	return ;
 }

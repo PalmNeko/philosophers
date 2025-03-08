@@ -18,7 +18,6 @@ void	ph_done(t_philosopher *philo);
 void	*ph_routine_philo(t_philosopher *philo)
 {
 	int		cnt;
-	// bool	in_process;
 
 	cnt = 0;
 	while (philo->manager->config->must_eat_times == -1

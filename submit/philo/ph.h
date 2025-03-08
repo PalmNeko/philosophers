@@ -36,7 +36,8 @@ void			ph_run_eat(t_philosopher *philo);
 void			ph_run_sleep(t_philosopher *philo);
 void			ph_run_think(t_philosopher *philo);
 void			ph_set_end(t_manager *manager);
-int				ph_order(t_philosopher *philo, t_philo_action action, bool is_lock);
+int				ph_order(
+					t_philosopher *philo, t_philo_action action, bool is_lock);
 int				ph_wait_some_order(t_philosopher *philo);
 void			ph_run_die(t_philosopher *philo);
 int				ph_to_status(t_philosopher *philo, t_philo_status status);
